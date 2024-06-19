@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 data
+.venv
+
+.firebaserc
+
+emulator_data
