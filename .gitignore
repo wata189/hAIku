@@ -29,3 +29,7 @@ data
 .firebaserc
 
 emulator_data
+
+.env*
+.http
+__pycache__
