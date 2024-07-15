@@ -7,7 +7,7 @@
     "------------↓開発------------": "",
     "ローカルWebサーバ": "vite",
     "ローカルfirebase": "firebase emulators:start --import=emulator_data --export-on-exit",
-    "ローカルAPIサーバ": "npx env-cmd -f functions/.env.functions.dev functions-framework --source=functions/main.py --target=main",
+    "ローカルAPIサーバ": "npx env-cmd -f functions/.env.functions.dev functions-framework --source=functions/main.py --target=entry_point",
     "------------↓バッチ開発------------": "",
     "ローカルバッチ開発": "npx env-cmd -f batch/.env.batch.dev python batch/hoe.py",
     "haiku-data.jpからデータ取得": "npx env-cmd -f batch/.env.batch.dev python batch/fetch_haiku.py",
