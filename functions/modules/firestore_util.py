@@ -46,9 +46,7 @@ def select_firestore(transaction: firestore.firestore.Transaction, collection_pa
   if field_path is not None and op_string is not None and value is not None:
     ref = ref.where(field_path, op_string, value)
 
-  docs = (
-    ref.stream(transaction=transaction)
-  )
+  docs = ref.get(transaction)
   
   results = list(map(doc_to_dict, docs))
   
