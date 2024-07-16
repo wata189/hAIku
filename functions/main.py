@@ -3,7 +3,8 @@ import contextlib
 import os
 import random
 from agraffe import Agraffe
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import firestore
 from dataclasses import dataclass
 from pydantic import BaseModel
@@ -27,9 +28,13 @@ app = FastAPI(lifespan=lifespan)
 ENV = os.environ.get("ENV")
 CLIENT_URL  = os.environ.get("CLIENT_URL")
 # CORSの設定
-RESPONSE_HEADERS = {
-  "Access-Control-Allow-Origin": CLIENT_URL
-}
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=[CLIENT_URL],
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)
 
 #############################ルーティング#############################
 @app.get("/init")
