@@ -12,9 +12,9 @@ from transformers import BertJapaneseTokenizer, BertModel
 import pandas as pd
 import torch
 from torch import Tensor
-import pickle
 
 from modules import firestore_util
+from modules import storage_util
 
 #############################設定#############################
 @contextlib.asynccontextmanager
@@ -46,8 +46,13 @@ class Suggest_Params(BaseModel):
 
 @app.post("/suggest")
 def suggest(params: Suggest_Params):
-  suggested_haikus = suggest_haikus(params.selected_haikus)
+  suggested_haikus = firestore_util.run_transaction([lambda tran: suggest_haikus(tran, params.selected_haikus)])
   return {"suggested_haikus": suggested_haikus}
+
+# TODO: search処理
+@app.get("/search")
+def search():
+  return {"msg": "search!"}
 
 
 #############################諸々の処理#############################
@@ -80,7 +85,7 @@ def suggest_haikus(transaction:firestore.firestore.Transaction, selected_haikus:
   haiku_suggester.delete_selected_haiku(selected_haiku_ids)
 
   # cos類似度上位n件のidを取ってくる
-  count = 20
+  count = 30
   suggested_ids = haiku_suggester.get_similar_haiku_ids(selected_haiku_vectors, count)
 
   # suggested_idsを元にfirestoreからselect
@@ -94,19 +99,17 @@ class Haiku_Suggester:
 
   def __init__(self):
     self.max_length = 256
-    #TODO: ファイルはstorageから取ってくる
-    with open(os.path.join("..", "data", "model.pkl"), 'rb') as f:
-      self.model = pickle.load(f)
-    with open(os.path.join("..", "data", "tokenizer.pkl"), 'rb') as f:
-      self.tokenizer = pickle.load(f)
-    with open(os.path.join("..", "data", "haiku_vector.pkl"), 'rb') as f:
-      self.haiku_vectors = pickle.load(f)
+
+    # storageから持ってくる
+    self.model = storage_util.open_file("model.pkl")
+    self.tokenizer = storage_util.open_file("tokenizer.pkl")
+    self.haiku_vectors = storage_util.open_file("haiku_vector.pkl")
   
   def get_haiku_vectors(self, id:str) -> Tensor:
     return torch.tensor(self.haiku_vectors.loc[self.haiku_vectors["id"] == id]["content_vector"].to_list()[0])
   
   def delete_selected_haiku(self, ids:list[str]) -> None:
-    self.haiku_vectors = self.haiku_vectors[self.haiku_vectors["id"].isin(ids)]
+    self.haiku_vectors = self.haiku_vectors[self.haiku_vectors["id"].isin(ids) == False]
     
   def text_to_vector(self, text:str) -> Tensor:
     encoding = self.tokenizer(
@@ -138,6 +141,7 @@ class Haiku_Suggester:
     self.haiku_vectors["similarity"] = self.haiku_vectors["content_vector"].apply(calc)
     
     df_result = self.haiku_vectors.sort_values('similarity', ascending=False).head(count)
+
     return df_result["id"].tolist()
 
 
