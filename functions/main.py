@@ -3,7 +3,7 @@ import contextlib
 import os
 import random
 from agraffe import Agraffe
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import firestore
 from dataclasses import dataclass
@@ -46,18 +46,19 @@ class Simple_Haiku(BaseModel):
   id: Union[str, None]
   content: str
 
-class Suggest_Params(BaseModel):
+class SuggestParams(BaseModel):
   selected_haikus: list[Simple_Haiku]
 
 @app.post("/suggest")
-def suggest(params: Suggest_Params):
+def suggest(params: SuggestParams):
   suggested_haikus = firestore_util.run_transaction([lambda tran: suggest_haikus(tran, params.selected_haikus)])
   return {"suggested_haikus": suggested_haikus}
 
 # TODO: search処理
 @app.get("/search")
-def search():
-  return {"msg": "search!"}
+def search(word: str = ""):
+  searched_haikus = firestore_util.run_transaction([lambda tran: search_haikus(tran, word)])
+  return {"searched_haikus": searched_haikus}
 
 
 #############################諸々の処理#############################
@@ -73,6 +74,15 @@ def fetch_random_haikus(transaction:firestore.firestore.Transaction):
   haikus:list[Haikus] = firestore_util.select_firestore(transaction, "m_haiku")
   init_haikus_count = 10
   return random.sample(haikus, init_haikus_count)
+
+def search_haikus(transaction:firestore.firestore.Transaction, word:str):
+  all_haikus:list[Haikus] = firestore_util.select_firestore(transaction, "m_haiku")
+  replaced_word = word.replace(' ', '').replace('　', '').replace('__BR__', '').replace('\n', "").replace('\xa0', '').replace('\r', '').strip()
+  searched_haikus = [
+    haiku for haiku in all_haikus
+    if replaced_word in haiku["content"] or replaced_word in haiku["author"]
+  ]
+  return searched_haikus
 
 def suggest_haikus(transaction:firestore.firestore.Transaction, selected_haikus: list[Simple_Haiku]):
   # サジェスター作る
