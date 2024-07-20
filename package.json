@@ -22,10 +22,12 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.16.4",
     "@mui/material": "^5.16.4",
+    "axios": "^1.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.7.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -34,11 +36,17 @@
     "autoprefixer": "^10.4.19",
     "env-cmd": "^10.1.0",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-react": "^7.34.4",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "firebase-tools": "^13.11.2",
+    "globals": "^15.8.0",
     "npx": "^10.2.2",
+    "prettier": "^3.3.3",
     "typescript": "^5.2.2",
+    "typescript-eslint": "^7.16.1",
     "vite": "^5.2.0"
   }
 }
