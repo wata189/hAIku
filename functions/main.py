@@ -63,7 +63,7 @@ def search(word: str = ""):
 
 #############################諸々の処理#############################
 @dataclass
-class Haikus(firestore_util.Firestore_Dict):
+class Haiku(firestore_util.Firestore_Dict):
   id: str
   content: str
   author: str
@@ -71,12 +71,12 @@ class Haikus(firestore_util.Firestore_Dict):
 
 def fetch_random_haikus(transaction:firestore.firestore.Transaction):
   # ランダムにn個の俳句をDBから取得して返す
-  haikus:list[Haikus] = firestore_util.select_firestore(transaction, "m_haiku")
+  haikus:list[Haiku] = firestore_util.select_firestore(transaction, "m_haiku")
   init_haikus_count = 10
   return random.sample(haikus, init_haikus_count)
 
 def search_haikus(transaction:firestore.firestore.Transaction, word:str):
-  all_haikus:list[Haikus] = firestore_util.select_firestore(transaction, "m_haiku")
+  all_haikus:list[Haiku] = firestore_util.select_firestore(transaction, "m_haiku")
   replaced_word = word.replace(' ', '').replace('　', '').replace('__BR__', '').replace('\n', "").replace('\xa0', '').replace('\r', '').strip()
   searched_haikus = [
     haiku for haiku in all_haikus
