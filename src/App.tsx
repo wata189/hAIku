@@ -269,6 +269,10 @@ const App: FC = () => {
     setExpanded(!expanded);
   };
 
+  const haikuSx = {
+    fontFamily: 'BIZ UD明朝',
+  };
+
   const fetchInitHaikus = async () => {
     const response = await axiosUtil.get('/init');
     if (searchedHaikus.length > 0) {
@@ -287,7 +291,7 @@ const App: FC = () => {
   const dispSelectedHaikus = selectedHaikus.map((haiku, i) => (
     <Card key={haiku.id} sx={{ m: 1 }}>
       <CardContent>
-        <Typography variant="h5">
+        <Typography variant="h5" sx={haikuSx}>
           {haiku.content}
           <Link
             href={getDataFromContentLink(haiku)}
@@ -303,7 +307,7 @@ const App: FC = () => {
       <CardContent sx={{ display: 'flex' }}>
         <Box sx={{ flexGrow: 1 }}>
           {haiku.author && (
-            <Typography variant="h6">
+            <Typography variant="h6" sx={haikuSx}>
               {haiku.author}
               <Link
                 href={getDataFromAuthorLink(haiku)}
@@ -332,7 +336,7 @@ const App: FC = () => {
   const dispSearchedHaikus = searchedHaikus.map((haiku) => (
     <Card key={haiku.id} sx={{ m: 1 }}>
       <CardContent>
-        <Typography variant="h5">
+        <Typography variant="h5" sx={haikuSx}>
           {haiku.content}
           {haiku.dataFrom && haiku.id && (
             <Link
@@ -350,7 +354,7 @@ const App: FC = () => {
       <CardContent sx={{ display: 'flex' }}>
         <Box sx={{ flexGrow: 1 }}>
           {haiku.author && (
-            <Typography variant="h6">
+            <Typography variant="h6" sx={haikuSx}>
               {haiku.author}
               <Link
                 href={getDataFromAuthorLink(haiku)}
